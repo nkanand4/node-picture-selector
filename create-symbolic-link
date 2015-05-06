@@ -1,0 +1,3 @@
+#!/bin/bash
+rm softlink 2> /dev/null
+ln -s $1 softlink
