@@ -1,6 +1,6 @@
-<div class="modal-body"
+<div id="lightboxtpl" class="modal-body"
      ng-swipe-left="Lightbox.nextImage()"
-     ng-swipe-right="Lightbox.prevImage()">
+     ng-swipe-right="Lightbox.prevImage()" ng-controller="OverlayController">
     <!-- navigation -->
     <div class="lightbox-nav">
         <!-- close button -->
@@ -12,7 +12,7 @@
             </a>
 
             <span ng-click="selectMe()" target="_blank"
-               class="btn btn-xs btn-default">
+               class="btn btn-xs btn-default" ng-class="{'btn-info': Lightbox.image.isAdded}">
                 Select
             </span>
 

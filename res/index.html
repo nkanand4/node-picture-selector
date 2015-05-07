@@ -13,6 +13,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" />
     <link href="/vendor/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css" media="all" rel="stylesheet" />
+    <link href="css/index.css" media="all" rel="stylesheet" />
 </head>
 <body ng-controller="FolderCtrlr">
     <form>
@@ -23,7 +24,8 @@
     <div>
         <h5>Listing files:{{getFiles().length}}</h5>
         <span ng-repeat="picture in getFiles()">
-            <img ng-click="openLightboxModal($index)" ng-src="{{picture.url}}" height="80px" width="80px">
+            <img ng-click="openLightboxModal($index)" ng-src="{{picture.url}}"
+                 style="height: 80px; width: 80px;" class="img-thumbnail" ng-class="{selected: picture.isAdded}">
         </span>
     </div>
 <script type="text/javascript">
