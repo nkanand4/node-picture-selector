@@ -59,13 +59,11 @@ angular.module('DataServices', [
             }
         },
         isAlreadyAdded: function(file) {
-            var result = !!file.isAdded;
-            $log.info('File added? ', result);
-            return result;
+            return !!file.isAdded;
         }
     };
 })
-.controller('OverlayController', function($scope, Lightbox, Collector, $log, $document) {
+.controller('OverlayController', function($scope, Lightbox, Collector, $log, $document, $timeout) {
 
     $scope.selectMe = function() {
         Collector.toggleCollect(Lightbox.image);
@@ -76,8 +74,9 @@ angular.module('DataServices', [
 
     $document.bind('keypress', function (event) {
         if(event.which === 32) {
-            $scope.selectMe();
-            $scope.$apply();
+            $timeout(function() {
+                $scope.selectMe();
+            });
             event.preventDefault();
         }
     });
