@@ -7,6 +7,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var finder = require('./finder');
 var symlinker = require('./symlinker');
+var watchman = require('./watchman');
 
 var port = process.env.PORT || 8000;
 
@@ -34,6 +35,17 @@ io.on('connection', function(socket){
                 },
                 finished: function(exts) {
                     socket.emit('extensionsLocated', exts);
+                    watchman.watch(message.path, {
+                      /*add: function(newFile) {
+                        var downloadPath = newFile.replace(message.path, '/download/');
+                        socket.emit('found', {url: downloadPath, realPath: newFile});
+                        console.log('A file has been added', newFile);
+                      },*/
+                      delete: function(deletedFile) {
+                        var downloadPath = deletedFile.replace(message.path, '/download/');
+                        socket.emit('removed', {url: downloadPath, realPath: deletedFile});
+                      }
+                    });
                 }
             });
         });

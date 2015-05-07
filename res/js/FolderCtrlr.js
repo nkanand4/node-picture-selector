@@ -31,6 +31,11 @@ angular.module('DataServices', [
         $scope.$evalAsync();
     });
 
+    connector.getConnection().on('removed', function(message) {
+      Collector.removeFile(message);
+      $scope.$evalAsync();
+    });
+
     connector.getConnection().on('extensionsLocated', function(extensions) {
         $log.log('Extensions located', extensions);
         $scope.$evalAsync();
@@ -52,6 +57,9 @@ angular.module('DataServices', [
         },
         addFiles: function(file) {
             files.push(file);
+        },
+        removeFile: function(file) {
+            _.remove(files, file);
         },
         getFiles: function() {
             return files;
