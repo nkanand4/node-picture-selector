@@ -16,6 +16,7 @@ server.listen(port, function () {
 
 // Routing
 app.use('/res', express.static(__dirname + '/res'));
+app.use('/vendor', express.static(__dirname + '/vendor'));
 
 
 io.on('connection', function(socket){
@@ -29,7 +30,7 @@ io.on('connection', function(socket){
             finder.configure(__dirname + '/softlink', message.filter).beginSearch({
                 match: function(matchedFile) {
                     var downloadPath = matchedFile.replace(/.*\/softlink\//, '/download/');
-                    socket.emit('found', {file: downloadPath, realPath: matchedFile});
+                    socket.emit('found', {url: downloadPath, realPath: matchedFile});
                 }
             });
         });

@@ -3,10 +3,16 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Image selector</title>
+    <script type="text/javascript" src="/vendor/lodash/lodash.js"></script>
     <script type="text/javascript" src="js/angular.js"></script>
     <script type="text/javascript" src="js/connection.js"></script>
+    <script type="text/javascript" src="/vendor/angular-bootstrap/ui-bootstrap.js"></script>
+    <script type="text/javascript" src="/vendor/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/vendor/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.js"></script>
     <script type="text/javascript" src="js/FolderCtrlr.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" />
+    <link href="/vendor/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css" media="all" rel="stylesheet" />
 </head>
 <body ng-controller="FolderCtrlr">
     <form>
@@ -17,7 +23,7 @@
     <div>
         <h5>Listing files:{{getFiles().length}}</h5>
         <span ng-repeat="picture in getFiles()">
-            <img ng-src="{{picture.file}}" height="80px" width="80px">
+            <img ng-click="openLightboxModal($index)" ng-src="{{picture.url}}" height="80px" width="80px">
         </span>
     </div>
 <script type="text/javascript">

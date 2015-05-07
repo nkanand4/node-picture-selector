@@ -2,8 +2,15 @@
  * Created by nitesh on 5/5/15.
  */
 
-angular.module('DataServices', ['Connections'])
-.controller('FolderCtrlr', function($scope, $log, connector) {
+angular.module('DataServices', [
+    'Connections',
+    'bootstrapLightbox'
+])
+.config(function (LightboxProvider) {
+    // set a custom template
+    LightboxProvider.templateUrl = '_partials/_lightbox.html';
+})
+.controller('FolderCtrlr', function($scope, $log, connector, Lightbox) {
     var files = [];
     $scope.folderpath = '/Users/nitesh/tmp/screenshots';
     $scope.filter = 'png';
@@ -23,4 +30,8 @@ angular.module('DataServices', ['Connections'])
         files.push(message);
         $scope.$evalAsync();
     });
+
+    $scope.openLightboxModal = function (index) {
+        Lightbox.openModal($scope.getFiles(), index);
+    };
 });
