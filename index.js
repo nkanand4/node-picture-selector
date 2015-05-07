@@ -31,6 +31,9 @@ io.on('connection', function(socket){
                 match: function(matchedFile) {
                     var downloadPath = matchedFile.replace(/.*\/softlink\//, '/download/');
                     socket.emit('found', {url: downloadPath, realPath: matchedFile});
+                },
+                finished: function(exts) {
+                    socket.emit('extensionsLocated', exts);
                 }
             });
         });

@@ -31,6 +31,11 @@ angular.module('DataServices', [
         $scope.$evalAsync();
     });
 
+    connector.getConnection().on('extensionsLocated', function(extensions) {
+        $log.log('Extensions located', extensions);
+        $scope.$evalAsync();
+    });
+
     $scope.openLightboxModal = function (index) {
         Lightbox.openModal($scope.getFiles(), index);
     };
