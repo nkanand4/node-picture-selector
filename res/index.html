@@ -22,7 +22,12 @@
         <button ng-click="sendinfo()">Scan dir</button>
     </form>
     <div>
-        <h5>Listing files:{{getFiles().length}}</h5>
+        <h5>
+            <span>Listing files:{{getFiles().length}}</span>
+            <span ng-repeat="item in extensions">
+                {{item.name}}: {{item.count}}
+            </span>
+        </h5>
         <span ng-repeat="picture in getFiles()">
             <img ng-click="openLightboxModal($index)" ng-src="{{picture.url}}"
                  style="height: 80px; width: 80px;" class="img-thumbnail" ng-class="{selected: picture.isAdded}">

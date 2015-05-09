@@ -35,6 +35,7 @@ io.on('connection', function(socket){
                 },
                 finished: function(exts) {
                     socket.emit('extensionsLocated', exts);
+                    console.log('Extension located', exts);
                     watchman.watch(message.path, {
                       /*add: function(newFile) {
                         var downloadPath = newFile.replace(message.path, '/download/');

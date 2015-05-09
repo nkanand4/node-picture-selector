@@ -13,7 +13,7 @@ angular.module('DataServices', [
 .controller('FolderCtrlr', function($scope, $log, connector, Lightbox, Collector) {
 
     $scope.folderpath = '/Users/nitesh/tmp/screenshots';
-    $scope.filter = 'png';
+    $scope.filter = '';
     $scope.sendinfo = function() {
         Collector.reset();
         connector.send('setfolder', {
@@ -37,7 +37,15 @@ angular.module('DataServices', [
     });
 
     connector.getConnection().on('extensionsLocated', function(extensions) {
+        var exts = _.keys(extensions);
         $log.log('Extensions located', extensions);
+        _.forOwn(exts, function(key, i) {
+            exts[i] = {
+                name: key,
+                count: extensions[key]
+            }
+        });
+        $scope.extensions = angular.copy(exts);
         $scope.$evalAsync();
     });
 

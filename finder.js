@@ -83,6 +83,7 @@ var public = {
         return public;
     },
     beginSearch: function(handlers) {
+        exts = {};
         beginSearch({
             match: handlers.match || function() {},
             finished: handlers.finished || function() {},
