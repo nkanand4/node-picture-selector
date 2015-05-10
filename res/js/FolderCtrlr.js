@@ -67,6 +67,9 @@ angular.module('DataServices', [
     $scope.unSelectAll = function() {
         Collector.unSelectAll();
     };
+    $scope.downloadSelected = function() {
+        Collector.getSelectedFiles();
+    };
 })
 .factory('Collector', function($log) {
     var files = [];
@@ -102,6 +105,11 @@ angular.module('DataServices', [
             _.each(files, function(file) {
                 file.isAdded = false;
             });
+        },
+        getSelectedFiles: function() {
+            var selectedFiles = _.filter(files, {isAdded: true});
+            $log.log('Selected files', selectedFiles);
+            return selectedFiles;
         }
     };
 })
