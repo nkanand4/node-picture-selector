@@ -28,7 +28,7 @@
                 {{item.name}}: {{item.count}}
             </span>
         </h5>
-        <div ng-show="extensions.length > 0" id="selectall">
+        <div ng-show="getFiles().length > 0" id="selectall">
             <button ng-click="selectAll()">Select All</button>
             <button ng-click="unSelectAll()">Unselect All</button>
         </div>
