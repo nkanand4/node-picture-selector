@@ -1,3 +1,6 @@
 .selected {
     border-color: #f00;
 }
+#selectall {
+    margin-bottom: 20px;
+}

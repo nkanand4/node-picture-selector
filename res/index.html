@@ -24,10 +24,15 @@
     <div>
         <h5>
             <span>Listing files:{{getFiles().length}}</span>
-            <span ng-repeat="item in extensions">
+            <span ng-repeat="item in extensions" ng-click="filterBy(item)">
                 {{item.name}}: {{item.count}}
             </span>
         </h5>
+        <div ng-show="extensions.length > 0" id="selectall">
+            <button ng-click="selectAll()">Select All</button>
+            <button ng-click="unSelectAll()">Unselect All</button>
+        </div>
+
         <span ng-repeat="picture in getFiles()">
             <img ng-click="openLightboxModal($index)" ng-src="{{picture.url}}"
                  style="height: 80px; width: 80px;" class="img-thumbnail" ng-class="{selected: picture.isAdded}">

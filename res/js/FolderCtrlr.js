@@ -56,6 +56,17 @@ angular.module('DataServices', [
     $scope.isAdded = function() {
         return Collector.isAlreadyAdded(Lightbox.image);
     };
+
+    $scope.filterBy = function(item) {
+        $scope.filter = item.name;
+    };
+
+    $scope.selectAll = function() {
+        Collector.selectAll();
+    };
+    $scope.unSelectAll = function() {
+        Collector.unSelectAll();
+    };
 })
 .factory('Collector', function($log) {
     var files = [];
@@ -81,6 +92,16 @@ angular.module('DataServices', [
         },
         isAlreadyAdded: function(file) {
             return !!file.isAdded;
+        },
+        selectAll: function() {
+            _.each(files, function(file) {
+                file.isAdded = true;
+            });
+        },
+        unSelectAll: function() {
+            _.each(files, function(file) {
+                file.isAdded = false;
+            });
         }
     };
 })
