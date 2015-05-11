@@ -5,9 +5,11 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var uuid = require('node-uuid');
+var watchman = require('./watchman');
 var finder = require('./finder');
 var symlinker = require('./symlinker');
-var watchman = require('./watchman');
+var fileio = require('./fileOperations');
 
 var port = process.env.PORT || 8000;
 
@@ -31,7 +33,8 @@ io.on('connection', function(socket){
             finder.configure(__dirname + '/softlink', message.filter).beginSearch({
                 match: function(matchedFile) {
                     var downloadPath = matchedFile.replace(/.*\/softlink\//, '/download/');
-                    socket.emit('found', {url: downloadPath, realPath: matchedFile});
+                    var realPath = matchedFile.replace(/.*\/softlink\//, message.path + '/');
+                    socket.emit('found', {url: downloadPath, realPath: realPath});
                 },
                 finished: function(exts) {
                     socket.emit('extensionsLocated', exts);
@@ -52,7 +55,18 @@ io.on('connection', function(socket){
         });
     });
 
+    socket.on('prepDownload', function(){
+        // delete existing zipinput
+        if(socket.zipinput) {
+            fileio.removeTmpZipFile(socket.zipinput);
+        }
+        socket.zipinput = uuid.v4();
+        socket.zipoutput = socket.zipinput + '.tgz';
+    });
+
     socket.on('disconnect', function(){
         console.log('Connection released');
+        // delete zipinput file
+        console.log('Delete file', socket.zipinput);
     });
 });

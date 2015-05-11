@@ -10,7 +10,7 @@ angular.module('DataServices', [
     // set a custom template
     LightboxProvider.templateUrl = '_partials/_lightbox.html';
 })
-.controller('FolderCtrlr', function($scope, $log, connector, Lightbox, Collector) {
+.controller('FolderCtrlr', function($scope, $log, connector, Lightbox, Collector, $timeout) {
 
     $scope.folderpath = '/Users/nitesh/tmp/screenshots';
     $scope.filter = '';
@@ -49,6 +49,22 @@ angular.module('DataServices', [
         $scope.$evalAsync();
     });
 
+    function informDownloadingFiles(files, index) {
+        var filepath = _.pluck(files, 'realPath');
+        if(index === 0) {
+            connector.send('prepDownload', {
+                files: filepath
+            });
+        }
+        if(filepath.length > 0) {
+            connector.send('files2download', {
+                files: filepath
+            });
+        }else {
+            connector.send('downloadnow');
+        }
+    }
+
     $scope.openLightboxModal = function (index) {
         Lightbox.openModal($scope.getFiles(), index);
     };
@@ -68,7 +84,11 @@ angular.module('DataServices', [
         Collector.unSelectAll();
     };
     $scope.downloadSelected = function() {
-        Collector.getSelectedFiles();
+        var index = 0;
+        $timeout(function() {
+            var list = _.slice(Collector.getSelectedFiles(), index * 50, (index * 50) + 50);
+            informDownloadingFiles(list, index);
+        }, 50);
     };
 })
 .factory('Collector', function($log) {
