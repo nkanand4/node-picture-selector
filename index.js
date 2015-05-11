@@ -58,15 +58,43 @@ io.on('connection', function(socket){
     socket.on('prepDownload', function(){
         // delete existing zipinput
         if(socket.zipinput) {
-            fileio.removeTmpZipFile(socket.zipinput);
+            fileio.removeFile(socket.zipinput);
         }
         socket.zipinput = uuid.v4();
         socket.zipoutput = socket.zipinput + '.tgz';
     });
 
+    socket.on('files2download', function(message){
+        if(socket.zipinputReady) {
+            socket.zipinputReady.then(function() {
+                socket.zipinputReady = fileio.writeToZipInputFile(socket.zipinput, message.files);
+                return socket.zipinputReady;
+            });
+        }else {
+            socket.zipinputReady = fileio.writeToZipInputFile(socket.zipinput, message.files);
+        }
+    });
+
+    function createZipFile(sck) {
+        if(!sck.zipinputReady) {
+            setTimeout(createZipFile, 5000);
+        }else {
+            sck.zipinputReady.then(function() {
+                fileio.createZipFile(socket.zipoutput, socket.zipinput);
+            });
+        }
+    }
+
+    socket.on('downloadnow', function(){
+        console.log('Creating zip file for download');
+        createZipFile(socket);
+    });
+
     socket.on('disconnect', function(){
         console.log('Connection released');
         // delete zipinput file
+        fileio.removeFile(socket.zipinput);
+        fileio.removeFile(socket.zipoutput);
         console.log('Delete file', socket.zipinput);
     });
 });

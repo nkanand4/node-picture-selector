@@ -4,6 +4,7 @@
 var opertingFolder = '/tmp/node-picture-selector/';
 var exec = require('child_process').exec;
 var future = require('q');
+var fs = require('fs');
 var folderReady = future.defer();
 var folderIsReady = folderReady.promise;
 var child = exec('mkdir -p ' + opertingFolder, function(error, stdout, stderr) {
@@ -13,10 +14,29 @@ var child = exec('mkdir -p ' + opertingFolder, function(error, stdout, stderr) {
 });
 
 module.exports = {
-    writeToZipInputFile: function(filename) {
-
+    writeToZipInputFile: function(filename, list) {
+        var defer = future.defer();
+        fs.appendFile(opertingFolder + filename, list.join('\n'), function (err) {
+            if (err) throw err;
+            console.log('Writing to the ' + filename);
+            defer.resolve();
+        });
+        return defer.promise;
     },
-    removeZipInputFile: function(filename) {
+    writeToFlattenZipInputFile: function(filename, list) {
+        var defer = future.defer();
+        var strin = '';
+        list.forEach(function(file) {
+            strin += '-C ' + _path.dirname(file) + ' ' +_path.basename(file) + '\n';
+        });
+        fs.appendFile(opertingFolder + filename, strin, function (err) {
+            if (err) throw err;
+            console.log('Writing to the ' + filename);
+            defer.resolve();
+        });
+        return defer.promise;
+    },
+    removeFile: function(filename) {
         folderIsReady.then(function() {
             exec('rm ' + opertingFolder + filename);
         });
@@ -31,14 +51,5 @@ module.exports = {
             });
         });
         return createdZipFile.promise;
-    },
-    removeZipFile: function(input) {
-        folderIsReady.then(function() {
-            exec('rm ' + opertingFolder + input, function(error, stdout, stderr) {
-                if(!error) {
-                    createdZipFile.resolve();
-                }
-            });
-        });
     }
 };

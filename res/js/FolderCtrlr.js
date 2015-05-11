@@ -52,15 +52,16 @@ angular.module('DataServices', [
     function informDownloadingFiles(files, index) {
         var filepath = _.pluck(files, 'realPath');
         if(index === 0) {
-            connector.send('prepDownload', {
-                files: filepath
-            });
+            connector.send('prepDownload');
         }
+
         if(filepath.length > 0) {
             connector.send('files2download', {
                 files: filepath
             });
-        }else {
+        }
+
+        if(filepath.length < 50) {
             connector.send('downloadnow');
         }
     }
@@ -85,10 +86,18 @@ angular.module('DataServices', [
     };
     $scope.downloadSelected = function() {
         var index = 0;
-        $timeout(function() {
+        var sliceMe = function() {
             var list = _.slice(Collector.getSelectedFiles(), index * 50, (index * 50) + 50);
             informDownloadingFiles(list, index);
-        }, 50);
+            if(list.length < 50) {
+                // no more
+            }else {
+                // keep doing it.
+                index += 1;
+                sliceMe();
+            }
+        };
+        $timeout(sliceMe, 50);
     };
 })
 .factory('Collector', function($log) {
