@@ -10,6 +10,8 @@ var watchman = require('./watchman');
 var finder = require('./finder');
 var symlinker = require('./symlinker');
 var fileio = require('./fileOperations');
+var tmpFolder = __dirname + '/tmp/node-picture-selector/';
+fileio.setOperatingFolder(tmpFolder);
 
 var port = process.env.PORT || 8000;
 
@@ -20,6 +22,11 @@ server.listen(port, function () {
 // Routing
 app.use('/res', express.static(__dirname + '/res'));
 app.use('/vendor', express.static(__dirname + '/vendor'));
+
+app.get('/zip/:fileId', function(req, res) {
+    console.log('Will hand over file:: ', tmpFolder + req.params.fileId + '.tgz');
+    res.download(tmpFolder + req.params.fileId + '.tgz');
+});
 
 
 io.on('connection', function(socket){
@@ -76,18 +83,16 @@ io.on('connection', function(socket){
     });
 
     function createZipFile(sck) {
-        if(!sck.zipinputReady) {
-            setTimeout(createZipFile, 5000);
-        }else {
-            sck.zipinputReady.then(function() {
-                fileio.createZipFile(socket.zipoutput, socket.zipinput);
-            });
-        }
+        return sck.zipinputReady.then(function() {
+            return fileio.createZipFile(socket.zipoutput, socket.zipinput);
+        });
     }
 
     socket.on('downloadnow', function(){
-        console.log('Creating zip file for download');
-        createZipFile(socket);
+        createZipFile(socket).then(function(file) {
+            console.log('Creating zip file for download', file);
+            socket.emit('downloadready', {link: '/zip/'+socket.zipinput});
+        });
     });
 
     socket.on('disconnect', function(){

@@ -32,6 +32,9 @@
             <button ng-click="selectAll()">Select All</button>
             <button ng-click="unSelectAll()">Unselect All</button>
             <button ng-click="downloadSelected()">Download</button>
+            <a ng-show="downloadLink" href="{{downloadLink}}" target="_blank">
+                Use this link to download selection
+            </a>
         </div>
 
         <span ng-repeat="picture in getFiles()">

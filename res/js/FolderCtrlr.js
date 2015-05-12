@@ -14,8 +14,10 @@ angular.module('DataServices', [
 
     $scope.folderpath = '/Users/nitesh/tmp/screenshots';
     $scope.filter = '';
+    $scope.downloadLink = '';
     $scope.sendinfo = function() {
         Collector.reset();
+        $scope.downloadLink = '';
         connector.send('setfolder', {
             path: $scope.folderpath,
             filter: $scope.filter
@@ -28,6 +30,12 @@ angular.module('DataServices', [
     connector.getConnection().on('found', function(message) {
         $log.log('Getting messages');
         Collector.addFiles(message);
+        $scope.$evalAsync();
+    });
+
+    connector.getConnection().on('downloadready', function(message) {
+        $log.log('You can download the file from here.', message);
+        $scope.downloadLink = message.link;
         $scope.$evalAsync();
     });
 
