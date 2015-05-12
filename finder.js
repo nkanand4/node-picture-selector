@@ -39,6 +39,11 @@ function isIgnoredFile(path, stat) {
         console.log('Ignoring symbolic link', path);
         return true;
     }
+    if(stat.isDirectory()) {
+        console.log('Ignoring directory', path);
+        return true;
+    }
+
     collectExtensions(path);
 }
 
