@@ -10,6 +10,7 @@ var watchman = require('./watchman');
 var finder = require('./finder');
 var symlinker = require('./symlinker');
 var fileio = require('./fileOperations');
+var compressor = require('./compress');
 var tmpFolder = __dirname + '/tmp/node-picture-selector/';
 fileio.setOperatingFolder(tmpFolder);
 
@@ -41,7 +42,9 @@ io.on('connection', function(socket){
                 match: function(matchedFile) {
                     var downloadPath = matchedFile.replace(/.*\/softlink\//, '/download/');
                     var realPath = matchedFile.replace(/.*\/softlink\//, message.path + '/');
-                    socket.emit('found', {url: downloadPath, realPath: realPath});
+                    var base64 = compressor.compress(matchedFile, 100).then(function(base64) {
+                        socket.emit('found', {url: downloadPath, realPath: realPath, base64: base64});
+                    });
                 },
                 finished: function(exts) {
                     socket.emit('extensionsLocated', exts);
