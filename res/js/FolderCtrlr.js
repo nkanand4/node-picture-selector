@@ -12,7 +12,7 @@ angular.module('DataServices', [
 })
 .controller('FolderCtrlr', function($scope, $log, connector, Lightbox, Collector, $timeout) {
 
-    $scope.folderpath = '/Users/nitesh/Pictures/pics';
+    $scope.folderpath = '/Users/nitesh/Public/pics';
     $scope.filter = '';
     $scope.downloadLink = '';
     $scope.sendinfo = function() {
@@ -28,7 +28,6 @@ angular.module('DataServices', [
     };
 
     connector.getConnection().on('found', function(message) {
-        $log.log('Getting messages');
         Collector.addFiles(message);
         $scope.$evalAsync();
     });

@@ -6,7 +6,8 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var uuid = require('node-uuid');
-var watchman = require('./watchman');
+var future = require('q');
+//var watchman = require('./watchman');
 var finder = require('./finder');
 var symlinker = require('./symlinker');
 var fileio = require('./fileOperations');
@@ -34,6 +35,9 @@ io.on('connection', function(socket){
     console.log('Opened a new connection');
 
     socket.on('setfolder', function(message){
+        var defer = future.defer();
+        var onceCompressed = defer.promise;
+        defer.resolve();
         console.log('Data on event', message.path);
         symlinker.execute(message.path, function() {
             app.use('/download', express.static(__dirname + '/softlink'));
@@ -42,24 +46,36 @@ io.on('connection', function(socket){
                 match: function(matchedFile) {
                     var downloadPath = matchedFile.replace(/.*\/softlink\//, '/download/');
                     var realPath = matchedFile.replace(/.*\/softlink\//, message.path + '/');
-                    var base64 = compressor.compress(matchedFile, 100).then(function(base64) {
-                        socket.emit('found', {url: downloadPath, realPath: realPath, base64: base64});
+                    onceCompressed = onceCompressed.then(function() {
+                        return compressor.compress(matchedFile, 100).then(function(base64) {
+                            console.log('Compression complete for ', matchedFile);
+                            socket.emit('found', {url: downloadPath, realPath: realPath, base64: base64});
+                            return true;
+                        });
                     });
+
+                    /*if(/jpg$|png$/ig.test(matchedFile)) {
+                        var base64 = compressor.compress(matchedFile, 100).then(function(base64) {
+                            socket.emit('found', {url: downloadPath, realPath: realPath, base64: base64});
+                        });
+                    }else {
+                        console.log('Not compressing', matchedFile);
+                    }*/
                 },
                 finished: function(exts) {
                     socket.emit('extensionsLocated', exts);
                     console.log('Extension located', exts);
-                    watchman.watch(message.path, {
+                    /*watchman.watch(message.path, {
                       /*add: function(newFile) {
                         var downloadPath = newFile.replace(message.path, '/download/');
                         socket.emit('found', {url: downloadPath, realPath: newFile});
                         console.log('A file has been added', newFile);
-                      },*/
+                      },
                       delete: function(deletedFile) {
                         var downloadPath = deletedFile.replace(message.path, '/download/');
                         socket.emit('removed', {url: downloadPath, realPath: deletedFile});
                       }
-                    });
+                    });*/
                 }
             });
         });
